@@ -1,43 +1,56 @@
 function init() {
+	//load canvas elements
 	var blkCanvas = document.getElementById('block');
 	var pCanvas = document.getElementById('player');
 	var particleCanvas = document.getElementById('particle');
 
+	//load canvas context
+	//object block context
 	var bCtx = blkCanvas.getContext('2d');
+	//player context
 	var pCtx = pCanvas.getContext('2d');
+	//particle context
 	var particleCtx = particleCanvas.getContext('2d');
 
+	//x, y, width, height
+	//list of object rectangles
 	var object_collision = [
-		[1, 2, 3, 4],
-		[1, 2, 3, 4],
+		[1, 2, 30, 40],
 	];
 
-	// draw_manager = new function() {
-	// 	this.particle_list = [];
-
-	// 	this.start = function() {
-	// 	}
-	// 	this.draw = function() {
-	// 	}
-	// 	this.clear = function() {
-	// 		bCtx.clearRect(0, 0, blkCanvas.width, blkCanvas.height);
-	// 	}
-	// }
+	object_manager = new function() {
+		//draw rectangles
+		this.start = function() {
+			for (var i = 0; i < object_collision.length; i++) {
+				bCtx.beginPath();
+				bCtx.rect(object_collision[i][0], object_collision[i][1], 
+					object_collision[i][2], object_collision[i][3]);
+				bCtx.fillStyle = 'green';
+				bCtx.fill();
+				bCtx.lineWidth = 1;
+				bCtx.strokeStyle = 'green';
+				bCtx.stroke();
+			};
+		}
+	}
 
 	particle_manager = new function() {
 		this.particle_list = [];
 
+		//initialize particles
 		this.start = function() {
 			for (var i = 0; i < 200; i++) {
 				var p = new particle(Math.random() * 640, Math.random() * 640);
 				this.particle_list.push(p);
 			};
 		}
+		//draw particles
 		this.draw = function() {
 			this.particle_list.forEach(function(elem) {
 				elem.draw();
 			});
 		}
+		//clear context of particle
 		this.clear = function() {
 			particleCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
 		}
@@ -86,6 +99,9 @@ function init() {
 				}
 			}
 			// }
+		}
+
+		this.sensor = function() {
 		}
 	}
 
@@ -149,6 +165,7 @@ function init() {
 
 	animate();
 	particle_manager.start();
+	object_manager.start();
 }
 
 document.addEventListener("DOMContentLoaded", init);
