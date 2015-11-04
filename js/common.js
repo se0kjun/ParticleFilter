@@ -59,6 +59,8 @@ function init() {
 	robot = new function() {
 		this.x = 0;
 		this.y = 0;
+		this.valid_area = 50;
+		this.ray_count = 8;
 		this.speed = 2;
 		this.move_flag = false;
 		this.move_status;
@@ -72,8 +74,6 @@ function init() {
 			pCtx.fillStyle = 'black';
 			pCtx.fill();
 			pCtx.lineWidth = 3;
-			pCtx.shadowColor = '#00ff00';
-			pCtx.shadowBlur = 40;
 			pCtx.strokeStyle = 'black';
 			pCtx.stroke();
 		}
@@ -83,25 +83,34 @@ function init() {
 		}
 
 		this.move = function() {
-			// if(this.x < pCanvas.width && this.y < pCanvas.height && this.x >= 0 && this.y >= 0 && this.move_flag) {
+			this.sensor();
 			if(this.move_flag) {
-				if(this.move_status == "left") {
+				if(this.move_status == "left" && (this.x - this.speed) > 0) {
 					this.x -= this.speed;
 				}
-				else if(this.move_status == "right") {
+				else if(this.move_status == "right" && (this.x + this.speed) < pCanvas.width) {
 					this.x += this.speed;
 				}
-				else if(this.move_status == "up") {
+				else if(this.move_status == "up" && (this.y - this.speed) > 0) {
 					this.y -= this.speed;
 				}
-				else if(this.move_status == "down") {
+				else if(this.move_status == "down" && (this.y + this.speed) < pCanvas.height) {
 					this.y += this.speed;
 				}
 			}
-			// }
 		}
 
 		this.sensor = function() {
+			var tmp = 360 / this.ray_count;
+			
+			for (var i = 0; i < this.ray_count; i++) {
+				pCtx.beginPath();
+				pCtx.moveTo(this.x, this.y);
+				console.log(tmp*i);
+				pCtx.lineTo((this.valid_area * Math.cos(tmp * i)) + this.x, 
+					(this.valid_area * Math.sin(tmp * i)) + this.y);
+				pCtx.stroke();
+			};
 		}
 	}
 
