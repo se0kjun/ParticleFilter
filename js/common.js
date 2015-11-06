@@ -15,8 +15,29 @@ function init() {
 	//x, y, width, height
 	//list of object rectangles
 	var object_collision = [
-		[1, 2, 30, 40],
+		[100, 0, 20, 150],
+		[220, 0, 20, 90],
+		[420, 0, 20, 200],
+		[200, 200, 240, 20],
+		[300, 100, 120, 20],
+		[0, 300, 300, 20],
+		[500, 100, 140, 20],
+		[550, 200, 90, 20],
+		[0, 400, 100, 20],
+		[150, 400, 100, 20],
+		[250, 400, 20, 240],
+		[270, 400, 100, 20],
+		[420, 400, 220, 20],
+		[70, 470, 100, 100],
+		[460, 270, 20, 130],
+		[500, 500, 140, 20],
 	];
+
+	//util
+	//convert degree to radian
+	Math.radian = function(degree) {
+		return degree * Math.PI / 180;
+	}
 
 	object_manager = new function() {
 		//draw rectangles
@@ -59,11 +80,12 @@ function init() {
 	robot = new function() {
 		this.x = 0;
 		this.y = 0;
-		this.valid_area = 50;
+		this.valid_area = 100;
 		this.ray_count = 8;
 		this.speed = 2;
 		this.move_flag = false;
 		this.move_status;
+		this.weight = 0;
 
 		this.draw = function() {
 			this.clear();
@@ -78,10 +100,12 @@ function init() {
 			pCtx.stroke();
 		}
 
+		//reset player(robot) context
 		this.clear = function() {
 			pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
 		}
 
+		//user can move a robot using arrow keys
 		this.move = function() {
 			this.sensor();
 			if(this.move_flag) {
@@ -101,14 +125,15 @@ function init() {
 		}
 
 		this.sensor = function() {
+			//unit angle
 			var tmp = 360 / this.ray_count;
 			
+			//draw distance sensor
 			for (var i = 0; i < this.ray_count; i++) {
 				pCtx.beginPath();
 				pCtx.moveTo(this.x, this.y);
-				console.log(tmp*i);
-				pCtx.lineTo((this.valid_area * Math.cos(tmp * i)) + this.x, 
-					(this.valid_area * Math.sin(tmp * i)) + this.y);
+				pCtx.lineTo((this.valid_area * Math.cos(Math.radian(tmp * i))) + this.x, 
+					(this.valid_area * Math.sin(Math.radian(tmp * i))) + this.y);
 				pCtx.stroke();
 			};
 		}
@@ -117,9 +142,11 @@ function init() {
 	var particle = function(x, y) {
 		this.x = x;
 		this.y = y;
+		this.weight = 0;
 	};
 
 	particle.prototype = {
+		//draw particle
 		draw: function() {
 			particleCtx.beginPath();
 			particleCtx.rect(Math.floor(this.x), Math.floor(this.y), 2, 2);
@@ -133,8 +160,6 @@ function init() {
 		},
 		probing: function() {
 		},
-		clear: function() {
-		}
 	}
 
 	KEY_CODE = {
